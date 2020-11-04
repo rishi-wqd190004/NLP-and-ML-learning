@@ -13,3 +13,6 @@ Also called as l1 norm or Manhattan norm. For more comparison here check this ou
 
 ## Data snooping
 When model overfits and more precisely just mugs up the patterns it will not do good in testing data. More like the model becomes too optimistic.
+
+## Basic ideas like keypoints
+# 1. Verify that the data is not biased before you stream it into your modelling.
