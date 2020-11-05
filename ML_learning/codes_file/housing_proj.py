@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import hashlib
 from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
+from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import LabelEncoder
 
 #various codes parameters
 pd.set_option('max_columns', None)
@@ -16,7 +18,7 @@ print("total rows: ", len(housing_data))
 # plot the graph as you wanna see the values
 #housing_data.hist(bins=50, figsize=(16,8))
 housing_data["median_income"].hist(bins=50)
-plt.show()
+#plt.show()
 
 # split the data into test and train (now common approach is to use train test split method from sklearn.model_selection) but here we use different approach
 def split_train_test(data, test_ratio):
@@ -76,4 +78,52 @@ housing = start_train_set.copy()
 # moving on to visualizing to showcase the data
 housing.plot(kind="scatter", x="longitude", y="latitude")
 housing.plot(kind="scatter", x="longitude", y="latitude", alpha=0.1) # adding alpha displays density of data points
-plt.show()
+#plt.show()
+
+# more clear visualization
+housing.plot(kind="scatter", x="longitude", y="latitude", alpha=0.4, s=housing["population"]/100, label="population", c="median_house_value", cmap=plt.get_cmap("jet"), colorbar=True)
+plt.legend()
+#plt.show()
+
+# looking for correlations (Pearson's r)
+corr_matrix = housing.corr()
+print("correlation for median_house_value\n", corr_matrix["median_house_value"].sort_values(ascending=True))
+
+# another way of correlation we can use pandas scatter_matrix
+attributes = ["median_house_value", "median_income", "total_rooms", "housing_median_age"]
+pd.plotting.scatter_matrix(housing[attributes], figsize=(16,8))
+#plt.show()
+
+# now the median income is having the maximum correlation
+housing.plot(kind="scatter", x="median_income", y="median_house_value", alpha=0.2)
+#plt.show()
+
+# lets create attributes
+housing["rooms_per_household"] = housing["total_rooms"]/housing["households"]
+housing["bedrooms_per_room"] = housing["total_bedrooms"]/housing["total_rooms"]
+housing["population_per_household"] = housing["population"]/housing["households"]
+
+# check the correlations
+corr_matrix = housing.corr()
+print(corr_matrix["median_house_value"].sort_values(ascending=False))
+
+# preping the data
+housing = start_train_set.drop("median_house_value", axis=1)
+housing_labels = start_train_set["median_house_value"].copy()
+
+# time to clean the data
+# as we know throwing off the data or the attribute is never a good practice (my learning)
+imputer = SimpleImputer(strategy="median")
+housing_num = housing.drop("ocean_proximity", axis=1) # imputer works on numerical attributes only
+imputer.fit(housing_num) # fitting the data
+print(f"median of all attributes \n", imputer.statistics_)
+# time to apply it on the training data
+X = imputer.transform(housing_num)
+# changing X into a dataframe
+housing_tr = pd.DataFrame(X, columns=housing_num.columns)
+# handling text and categorical data
+## for handling textual data like under ocean_proximity will change it to numerical data
+encoder = LabelEncoder()
+housing_cat = housing["ocean_proximity"]
+housing_cat_encoded = encoder.fit_transform(housing_cat)
+print("Encoded categorical data\n", housing_cat_encoded)

@@ -16,3 +16,20 @@ When model overfits and more precisely just mugs up the patterns it will not do 
 
 ## Basic ideas like keypoints
 # 1. Verify that the data is not biased before you stream it into your modelling.
+
+## Pearson's correlation
+Also called as standard correlation coefficient. It shows the linear correlation between X and Y. Has a value of +1 and -1 with
+    - total positive linear correlation --> +1
+    - no linear correlation --> 0
+    - total negative linear correlation --> -1
+In general,
+A correlation coefficient of 1 means that for every positive increase in one variable, there is a positive increase of a fixed proportion in the other. For example, shoe sizes go up in (almost) perfect correlation with foot length.
+A correlation coefficient of -1 means that for every positive increase in one variable, there is a negative decrease of a fixed proportion in the other. For example, the amount of gas in a tank decreases in (almost) perfect correlation with speed.
+Zero means that for every increase, there isn’t a positive or negative increase. The two just aren’t related.
+For further refer to (https://www.statisticshowto.com/probability-and-statistics/correlation-coefficient-formula/)
+
+## Using Imputer
+Create an imputer instance, specifying what you wanna replace missing vales with median of the attribute. Use sklearn.impute.SimpleImputer and see the documents for more. It works for filling the missing values.
+
+## LabelEncoder
+Majorly taken from sklearn.preprocessing.LabelEncoder. Changing the textual or categorical data into numerical data. For more checkout (https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.LabelEncoder.html). More importantly it contain only values between 0 and n_classes-1.
