@@ -127,3 +127,4 @@ encoder = LabelEncoder()
 housing_cat = housing["ocean_proximity"]
 housing_cat_encoded = encoder.fit_transform(housing_cat)
 print("Encoded categorical data\n", housing_cat_encoded)
+print(encoder.classes_) # printing various features present in ocean_proximity
