@@ -1,4 +1,4 @@
-# this is a simple example to show how the tensorflow actually works
+# this is a simple example to show how the tensorflow actually works(tensorflow client code example)
 import tensorflow as tf
 import numpy as np
 
