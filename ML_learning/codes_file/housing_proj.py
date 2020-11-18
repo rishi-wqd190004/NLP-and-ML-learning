@@ -7,6 +7,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, LabelBinarizer, StandardScaler
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn_pandas import DataFrameMapper
 
 #various codes parameters
 pd.set_option('max_columns', None)
@@ -159,11 +160,48 @@ housing_extra_attributes = attr_adder.transform(housing.values)
 # feature scaling
 # use sklearn.preprocessing.Minmaxscaler or use sklearn.preprocessing.standardscaler
 ## using pipelines for transformation
+# creating DataFrameSelector class
+class DataFrameSelector(BaseEstimator, TransformerMixin): # if not comfortable can use sklearn_pandas.DataFrameMapper()
+    def __init__(self, attribute_names):
+        self.attribute_names = attribute_names
+    def fit(self, X, y=None):
+        return self
+    def transform(self, X, y=None):
+        return X[self.attribute_names].values
+# creating a new label_binarizer so as to resolve the fit_transform issue mentioned below
+class MyLabelBinarizer(TransformerMixin):
+    def __init__(self, *args, **kwargs):
+        self.encoder = LabelBinarizer(*args, **kwargs)
+    def fit(self, x, y=0):
+        self.encoder.fit(x)
+        return self
+    def transform(self, x, y=0):
+        return self.encoder.transform(x)
+# adding num_attributes and cat_attributes to create a union
+num_attribs = list(housing_num)
+cat_attribs = ["ocean_proximity"]
 num_pipeline = Pipeline([
+        ('selector', DataFrameSelector(num_attribs)), # if getting TypeError: fit_transform() takes 2 positional arguments but 3 were given --> create your own new label
         ('imputer', SimpleImputer(strategy="median")),
         ('attribs_adder', CombinedAttributesAdder(True)),
         ('std_scaler', StandardScaler()),
         ])
-housing_num_tr = num_pipeline.fit_transform(housing_num)
+#housing_num_tr = num_pipeline.fit_transform(housing_num)
 # this above pipeline was good for numerical numbers but now we need a pipeline for LabelBinarizer on categorical data
 # Thanks to sklearn provides with FeatureUnion class
+cat_pipeline = Pipeline([
+        ('selector', DataFrameSelector(cat_attribs)), # be patient will define this DataFrameSelector class below
+        ('label_binarizer', MyLabelBinarizer()),
+        ])
+# if adding sklearn_pandas.DataFrameMapper():
+# cat_pipeline = Pipeline([
+#     ('label_binarizer', DataFrameMapper([(cat_attribs, LabelBinarizer())])),
+# ])
+# adding the full pipeline using FeatureUnion
+full_pipeline = FeatureUnion(transformer_list=[
+        ('num_pipeline', num_pipeline),
+        ('cat_pipeline', cat_pipeline),
+        ])
+# running the complete pipeline
+housing_prepared = full_pipeline.fit_transform(housing)
+print(housing_prepared.shape)
