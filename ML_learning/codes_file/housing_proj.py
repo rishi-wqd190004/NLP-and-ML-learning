@@ -8,6 +8,7 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder, LabelBinarizer, S
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn_pandas import DataFrameMapper
+from sklearn.linear_model import LinearRegression
 
 #various codes parameters
 pd.set_option('max_columns', None)
@@ -205,3 +206,7 @@ full_pipeline = FeatureUnion(transformer_list=[
 # running the complete pipeline
 housing_prepared = full_pipeline.fit_transform(housing)
 print(housing_prepared.shape)
+
+# now to select a model and create
+lin_reg = LinearRegression()
+lin_reg.fit(housing_prepared, housing_labels)
