@@ -2,13 +2,16 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import hashlib
-from sklearn.model_selection import train_test_split, StratifiedShuffleSplit
+from sklearn.model_selection import train_test_split, StratifiedShuffleSplit, cross_val_score
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, LabelBinarizer, StandardScaler
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn_pandas import DataFrameMapper
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
 
 #various codes parameters
 pd.set_option('max_columns', None)
@@ -210,3 +213,45 @@ print(housing_prepared.shape)
 # now to select a model and create
 lin_reg = LinearRegression()
 lin_reg.fit(housing_prepared, housing_labels)
+
+#trying to just fit some data and see how well the model predicts
+some_data = housing.iloc[:5]
+some_labels = housing_labels.iloc[:5]
+some_data_prepared = full_pipeline.transform(some_data)
+print("Predictions: \t", lin_reg.predict(some_data_prepared))
+print("Labels: \t", list(some_labels))
+
+# calculating the RMSE using the sklearn.metrics.mean_squared_error
+housing_predictions = lin_reg.predict(housing_prepared)
+lin_mse = mean_squared_error(housing_labels, housing_predictions)
+lin_rmse = np.sqrt(lin_mse)
+print("RMSE: ", lin_rmse)
+
+# as we saw this model was underfitting hence lets use a more complex model to save ourself from underfitting (DecisionTreeRegressor)
+tree_reg = DecisionTreeRegressor()
+tree_reg.fit(housing_prepared, housing_labels)
+# evaluating on the training set
+housing_predictions = tree_reg.predict(housing_prepared)
+tree_mse = mean_squared_error(housing_labels, housing_predictions)
+tree_rmse = np.sqrt(tree_mse)
+print("DecisionTreeRegressor RMSE: {}".format(tree_rmse))
+
+# as we saw a result of 0.0 that means its overfitting badly and to verify this we will use the skleanr cross-validation
+# sklearn k-fold cross-validation
+scores = cross_val_score(tree_reg, housing_prepared, housing_labels, scoring="neg_mean_squared_error", cv=10)
+rmse_score = np.sqrt(-scores)
+# displaying the scores
+def display_score(scores):
+    print("Scores: ", scores)
+    print("Mean: ", scores.mean())
+    print("Standard deviation: ", scores.std())
+display_score(rmse_score)
+# as the DT model didn't perform well as compared to before lets try the LinearRegression model with the validation dataset
+lin_scores = cross_val_score(lin_reg, housing_prepared, housing_labels, scoring="neg_mean_squared_error", cv=10)
+lin_rmse = np.sqrt(-lin_scores)
+display_score(lin_rmse)
+
+# time to try the third model here RandomForestRegressor
+rand_forest_reg = RandomForestRegressor()
+rand_forest_reg.fit(housing_prepared, housing_labels)
+print("RandomForestRegressor_RMSE: ", rand_forest_reg_rmse)
