@@ -40,8 +40,8 @@ A DecisionTreeRegressor model can be summarized with the below main points:
     - Decison tree are predictive model that use a set of binary rules to calculate a target value.
     - Each individual tree is merely a simple model that has branches, nodes and leaves.
 Some simple terms:
-    * Root node:
-      * Represent the complete data
+    - Root node:
+      - Represent the complete data
     - Splitting:
       - Dividing a node into two or more nodes or sub-nodes
     - Decision Node:
@@ -80,3 +80,6 @@ SVM is smart and uses kernel for various types of calculation, in other words it
         -svm.SVC(kernel='linear', C=1.0)
     - ## Radial Bias function
       - svm.SVC(kernel = 'rbf', gamma =‘auto’,C = C)
+
+## GridSearchCV
+Fine tuning the model by just telling which hyperparameter you want to experiment with and what values to try out.

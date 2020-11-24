@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import hashlib
-from sklearn.model_selection import train_test_split, StratifiedShuffleSplit, cross_val_score
+from sklearn.model_selection import train_test_split, StratifiedShuffleSplit, cross_val_score, GridSearchCV
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, LabelBinarizer, StandardScaler
 from sklearn.base import BaseEstimator, TransformerMixin
@@ -12,6 +12,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.svm import SVR
 
 #various codes parameters
 pd.set_option('max_columns', None)
@@ -222,12 +223,14 @@ print("Predictions: \t", lin_reg.predict(some_data_prepared))
 print("Labels: \t", list(some_labels))
 
 # calculating the RMSE using the sklearn.metrics.mean_squared_error
+# model1
 housing_predictions = lin_reg.predict(housing_prepared)
 lin_mse = mean_squared_error(housing_labels, housing_predictions)
 lin_rmse = np.sqrt(lin_mse)
 print("RMSE: ", lin_rmse)
 
 # as we saw this model was underfitting hence lets use a more complex model to save ourself from underfitting (DecisionTreeRegressor)
+# model2
 tree_reg = DecisionTreeRegressor()
 tree_reg.fit(housing_prepared, housing_labels)
 # evaluating on the training set
@@ -235,7 +238,6 @@ housing_predictions = tree_reg.predict(housing_prepared)
 tree_mse = mean_squared_error(housing_labels, housing_predictions)
 tree_rmse = np.sqrt(tree_mse)
 print("DecisionTreeRegressor RMSE: {}".format(tree_rmse))
-
 # as we saw a result of 0.0 that means its overfitting badly and to verify this we will use the skleanr cross-validation
 # sklearn k-fold cross-validation
 scores = cross_val_score(tree_reg, housing_prepared, housing_labels, scoring="neg_mean_squared_error", cv=10)
@@ -252,6 +254,41 @@ lin_rmse = np.sqrt(-lin_scores)
 display_score(lin_rmse)
 
 # time to try the third model here RandomForestRegressor
-rand_forest_reg = RandomForestRegressor()
+# model3
+rand_forest_reg = RandomForestRegressor(n_estimators=10, random_state=42)
 rand_forest_reg.fit(housing_prepared, housing_labels)
-print("RandomForestRegressor_RMSE: ", rand_forest_reg_rmse)
+housing_predictions_rand = rand_forest_reg.predict(housing_prepared)
+ran_tree_mse = mean_squared_error(housing_labels, housing_predictions)
+ran_tree_rmse = np.sqrt(ran_tree_mse)
+print("RandomForestRegressor_RMSE: ", ran_tree_rmse)
+# verifying through cross-validation
+rand_forest_score = cross_val_score(rand_forest_reg, housing_prepared, housing_labels, scoring="neg_mean_squared_error", cv=10)
+rand_forest_rmse_score = np.sqrt(-rand_forest_score)
+display_score(rand_forest_rmse_score)
+
+# time to try another model: SVR
+# model4
+svm_reg = SVR(kernel="linear")
+svm_reg.fit(housing_prepared, housing_labels)
+housing_predictions_svm = svm_reg.predict(housing_prepared)
+svm_mse = mean_squared_error(housing_labels, housing_predictions)
+svm_rmse = np.sqrt(svm_mse)
+print("RMSE_SVM: ", svm_rmse)
+
+## Fine tuning the models
+# method1 using GridSearchCV for our RandomForestRegressor
+param_grid = [
+    {'n_estimators': [3, 10, 30], 'max_features': [2,4,6,8]}, # here 3X4 = 12 combinations
+    {'bootstrap': [False], 'n_estimators': [3,10], 'max_features': [2,3,4]}, # here 2X3 = 6 combinations
+]
+grid_search = GridSearchCV(rand_forest_reg, param_grid, scoring='neg_mean_squared_error', cv=5) # model runs total 18 combinations 5 times
+grid_search.fit(housing_prepared, housing_labels)
+# printing the best parameters
+print("Best parameters \t", grid_search.best_params_)
+# printing the best estimators
+print("Best estimators \t", grid_search.best_estimator_)
+# printing the evaluation scores too
+cvres = grid_search.cv_results_
+#print(pd.DataFrame(cvres))
+for mean_score, params in zip(cvres["mean_test_score"], cvres["params"]):
+    print(np.sqrt(-mean_score), params)
