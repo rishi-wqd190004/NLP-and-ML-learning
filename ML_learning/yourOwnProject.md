@@ -40,21 +40,21 @@ A DecisionTreeRegressor model can be summarized with the below main points:
     - Decison tree are predictive model that use a set of binary rules to calculate a target value.
     - Each individual tree is merely a simple model that has branches, nodes and leaves.
 Some simple terms:
-    - ## Root node:
-      -Represent the complete data
-    - ##Splitting:
-      -Dividing a node into two or more nodes or sub-nodes
-    - ##Decision Node:
-      -When a sub-node splits into further sub-nodes
-    - ## Leaf Node:
+    * Root node:
+      * Represent the complete data
+    - Splitting:
+      - Dividing a node into two or more nodes or sub-nodes
+    - Decision Node:
+      - When a sub-node splits into further sub-nodes
+    - Leaf Node:
       - Nodes that don't split
-    - ## Pruning:
+    - Pruning:
       - When remove sub-nodes is called pruning. Also opposite of splitting
-    - ## Branch:
+    - Branch:
       - A part of the tree; another sub section of tree
-    - ## Parent node:
+    - Parent node:
       - A node which are divided into sub-nodes
-    - ## Child node:
+    - Child node:
       - The nodes which are divided and genereated from the parent node
 So in a DT, ** during training ** the model is fitted with any historical data that is relevant to the problem and the true value we want the model to predict. The model learns any relation between data and the target variable.
 After the training is done, the tree:
