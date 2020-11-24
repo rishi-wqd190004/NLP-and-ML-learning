@@ -40,12 +40,12 @@ A DecisionTreeRegressor model can be summarized with the below main points:
     - Decison tree are predictive model that use a set of binary rules to calculate a target value.
     - Each individual tree is merely a simple model that has branches, nodes and leaves.
 Some simple terms:
-    - ## Root node:
-      - Represent the complete data
-    - ## Splitting:
-      - Dividing a node into two or more nodes or sub-nodes
-    - ## Decision Node:
-      - When a sub-node splits into further sub-nodes
+    -## Root node:
+      -Represent the complete data
+    -##Splitting:
+      -Dividing a node into two or more nodes or sub-nodes
+    -##Decision Node:
+      -When a sub-node splits into further sub-nodes
     - ## Leaf Node:
       - Nodes that don't split
     - ## Pruning:
@@ -69,3 +69,14 @@ For further searching of which scoring type one wants to use see (https://scikit
 
 ## RandomForestRegressor
 Training many DT on random subsets of the features and then averaging out their preedictions.
+
+## Support Vector Machine (SVM)
+    - Both used in classification and regression problems
+    - Main aim of SVM is to differentiate the dataset into various classes and to find maximum marginal hyperplane, and its done:
+      - First SVM, creates hyperplanes iteratively and then segregates the classes in best ways
+      - Then choose the hyperplane which segregates the classes correctly
+SVM is smart and uses kernel for various types of calculation, in other words it takes low dimensional input data space and then outputs high dimensional space.
+    -## Linear:
+        -svm.SVC(kernel='linear', C=1.0)
+    - ## Radial Bias function
+      - svm.SVC(kernel = 'rbf', gamma =‘auto’,C = C)
