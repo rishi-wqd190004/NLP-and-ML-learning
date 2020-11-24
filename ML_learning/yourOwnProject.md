@@ -40,11 +40,11 @@ A DecisionTreeRegressor model can be summarized with the below main points:
     - Decison tree are predictive model that use a set of binary rules to calculate a target value.
     - Each individual tree is merely a simple model that has branches, nodes and leaves.
 Some simple terms:
-    -## Root node:
+    - ## Root node:
       -Represent the complete data
-    -##Splitting:
+    - ##Splitting:
       -Dividing a node into two or more nodes or sub-nodes
-    -##Decision Node:
+    - ##Decision Node:
       -When a sub-node splits into further sub-nodes
     - ## Leaf Node:
       - Nodes that don't split
