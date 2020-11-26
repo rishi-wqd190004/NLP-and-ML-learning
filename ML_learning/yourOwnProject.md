@@ -83,3 +83,11 @@ SVM is smart and uses kernel for various types of calculation, in other words it
 
 ## GridSearchCV
 Fine tuning the model by just telling which hyperparameter you want to experiment with and what values to try out.
+
+## RandomizedSearchCV
+Works the same way the GridSearchCV works but instead of trying out all possible combinations, it evaluates a given number of random combinations by selecting a random value for each hyperparameter at every iteration. Benefits are:
+    -## Instead of few values of hyperparameter, RandomizedSearchCV searches for many different values
+    -## You are the one who have more control on which hyperparameter search should be allocated by just setting the number of iterations
+
+## Ensemble Methods
+We all know well that group of good people would impact more goodness as compared to a single individual, hence ensemble methods are just the same of grouping all your good methods together. Best example if, Random Forests perform well as compared to and individual Decision Tree.

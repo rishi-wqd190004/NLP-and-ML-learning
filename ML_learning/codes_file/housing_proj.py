@@ -2,17 +2,19 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import hashlib
-from sklearn.model_selection import train_test_split, StratifiedShuffleSplit, cross_val_score, GridSearchCV
+from sklearn.model_selection import train_test_split, StratifiedShuffleSplit, cross_val_score, GridSearchCV, RandomizedSearchCV
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder, OneHotEncoder, LabelBinarizer, StandardScaler
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.compose import ColumnTransformer
 from sklearn_pandas import DataFrameMapper
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
+from scipy.stats import randint
 
 #various codes parameters
 pd.set_option('max_columns', None)
@@ -188,7 +190,7 @@ cat_attribs = ["ocean_proximity"]
 num_pipeline = Pipeline([
         ('selector', DataFrameSelector(num_attribs)), # if getting TypeError: fit_transform() takes 2 positional arguments but 3 were given --> create your own new label
         ('imputer', SimpleImputer(strategy="median")),
-        ('attribs_adder', CombinedAttributesAdder(True)),
+        ('attribs_adder', CombinedAttributesAdder()),
         ('std_scaler', StandardScaler()),
         ])
 #housing_num_tr = num_pipeline.fit_transform(housing_num)
@@ -203,9 +205,9 @@ cat_pipeline = Pipeline([
 #     ('label_binarizer', DataFrameMapper([(cat_attribs, LabelBinarizer())])),
 # ])
 # adding the full pipeline using FeatureUnion
-full_pipeline = FeatureUnion(transformer_list=[
-        ('num_pipeline', num_pipeline),
-        ('cat_pipeline', cat_pipeline),
+full_pipeline = ColumnTransformer(transformers=[
+        ('num', num_pipeline, num_attribs),
+        ('cat', OneHotEncoder(), cat_attribs),
         ])
 # running the complete pipeline
 housing_prepared = full_pipeline.fit_transform(housing)
@@ -292,3 +294,33 @@ cvres = grid_search.cv_results_
 #print(pd.DataFrame(cvres))
 for mean_score, params in zip(cvres["mean_test_score"], cvres["params"]):
     print(np.sqrt(-mean_score), params)
+
+# Randomized Search
+param_distribution = {
+    'n_estimators': randint(low=1, high=200),
+    'max_features': randint(low=1, high=8),
+}
+rnd_search = RandomizedSearchCV(rand_forest_reg, param_distribution, n_iter=10, cv=5, scoring='neg_mean_squared_error', random_state=42)
+rnd_search.fit(housing_prepared, housing_labels)
+cvres_rnd = rnd_search.cv_results_
+for mean_score, params in zip(cvres_rnd["mean_test_score"], cvres_rnd["params"]):
+    print("Mean_score", np.sqrt(-mean_score), params)
+
+# analyze the best models and its parameters
+feature_importance = grid_search.best_estimator_.feature_importances_
+extra_attribs = ["rooms_per_household", "population_per_household", "bedrooms_per_room"]
+cat_encoder = full_pipeline.named_transformers_["cat"]
+cat_one_hot_attribs = list(cat_encoder.categories_[0])
+attributes = num_attribs + extra_attribs + cat_one_hot_attribs
+print("Importance score with value \n",sorted(zip(feature_importance, attributes), reverse=True))
+
+# Time to predict using the testing dataset
+final_model = grid_search.best_estimator_
+X_test = start_test_set.drop("median_house_value", axis=1)
+y_test = start_test_set["median_house_value"].copy()
+X_test_prepared = full_pipeline.transform(X_test)
+final_predictions = final_model.predict(X_test_prepared)
+# final MSE
+final_mse = mean_squared_error(y_test, final_predictions)
+final_rmse = np.sqrt(final_mse)
+print("The final RMSE value from the pipeline {}".format(final_rmse))
