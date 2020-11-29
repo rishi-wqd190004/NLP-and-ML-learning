@@ -14,7 +14,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
-from scipy.stats import randint
+from scipy import stats
 
 #various codes parameters
 pd.set_option('max_columns', None)
@@ -297,8 +297,8 @@ for mean_score, params in zip(cvres["mean_test_score"], cvres["params"]):
 
 # Randomized Search
 param_distribution = {
-    'n_estimators': randint(low=1, high=200),
-    'max_features': randint(low=1, high=8),
+    'n_estimators': stats.randint(low=1, high=200),
+    'max_features': stats.randint(low=1, high=8),
 }
 rnd_search = RandomizedSearchCV(rand_forest_reg, param_distribution, n_iter=10, cv=5, scoring='neg_mean_squared_error', random_state=42)
 rnd_search.fit(housing_prepared, housing_labels)
@@ -324,3 +324,15 @@ final_predictions = final_model.predict(X_test_prepared)
 final_mse = mean_squared_error(y_test, final_predictions)
 final_rmse = np.sqrt(final_mse)
 print("The final RMSE value from the pipeline {}".format(final_rmse))
+
+# Adding confidence interval of 95%
+confidence = 0.95
+squared_errors = (final_predictions - y_test) ** 2
+mean = squared_errors.mean()
+m = len(squared_errors)
+print("95% confidence interval: \t{}".format(np.sqrt(stats.t.interval(confidence, m-1, loc=np.mean(squared_errors), scale=stats.sem(squared_errors)))))
+
+## Alternatively calculate confidence interval
+# zscore = stats.norm.ppf((1 + confidence) / 2)
+# zmargin = zscore * squared_errors.std(ddof=1) / np.sqrt(m)
+# np.sqrt(mean - zmargin), np.sqrt(mean + zmargin)

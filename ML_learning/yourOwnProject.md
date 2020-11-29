@@ -91,3 +91,6 @@ Works the same way the GridSearchCV works but instead of trying out all possible
 
 ## Ensemble Methods
 We all know well that group of good people would impact more goodness as compared to a single individual, hence ensemble methods are just the same of grouping all your good methods together. Best example if, Random Forests perform well as compared to and individual Decision Tree.
+
+## What is 90% or 95% confidence interval?
+Basically, confidence interval for an unknown parameter is based on sampling the distribution of a corresponding estimator. Other words, it proposes a range of plausible values for an unknown parameter(for example, mean). Majorly it defines values which you are certain of. For more info (https://askinglot.com/what-is-a-90-confidence-interval)
