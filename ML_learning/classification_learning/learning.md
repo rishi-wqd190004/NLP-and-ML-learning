@@ -5,11 +5,11 @@ As simple as the word means precision i.e. precise. Precision is accuracy of the
 ## Recall:
 This is also called as TPR or **senstivity**.
 This is the ratio of positive instances that are correctly detected by the classifier. The simple formula is:
-\frac{TP}{TP + FN}
+<a href="https://www.codecogs.com/eqnedit.php?latex=\frac{TP}{TP&space;&plus;&space;FN}" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{TP}{TP&space;&plus;&space;FN}" title="\frac{TP}{TP + FN}" /></a>
 
 ## F1 Score:
 Combine both the precision and recall and it creates a matrix. In simple terms it compares two classifiers (if that what you wanna do). It follows simple approach i.e. harmonic mean of precision and recall. See the formula:
-F1 = \frac{2}{\frac{1}{precision} + \frac{1}{recall}}
+<a href="https://www.codecogs.com/eqnedit.php?latex=F1&space;=&space;\frac{2}{\frac{1}{precision}&space;&plus;&space;\frac{1}{recall}}" target="_blank"><img src="https://latex.codecogs.com/svg.latex?F1&space;=&space;\frac{2}{\frac{1}{precision}&space;&plus;&space;\frac{1}{recall}}" title="F1 = \frac{2}{\frac{1}{precision} + \frac{1}{recall}}" /></a>
 
 ## ROC Curve:
 Its True Positive Rate vs False Positive Rate. 
