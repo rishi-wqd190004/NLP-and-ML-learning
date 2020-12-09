@@ -1,5 +1,6 @@
 ## Precision:
 As simple as the word means precision i.e. precise. Precision is accuracy of the positive prediction. See the formula
+
 \frac(TP){TP + FP}
 
 ## Recall:
