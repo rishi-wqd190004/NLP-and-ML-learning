@@ -1,7 +1,6 @@
 ## Precision:
 As simple as the word means precision i.e. precise. Precision is accuracy of the positive prediction. See the formula
-
-\frac(TP){TP + FP}
+<img <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{TP}{TP&space;&plus;&space;FP}" target="_blank"><img src="https://latex.codecogs.com/svg.latex?\frac{TP}{TP&space;&plus;&space;FP}" title="\frac{TP}{TP + FP}" /></a> />
 
 ## Recall:
 This is also called as TPR or **senstivity**.
