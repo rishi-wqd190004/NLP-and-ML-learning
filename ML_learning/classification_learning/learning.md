@@ -16,3 +16,7 @@ Its True Positive Rate vs False Positive Rate.
 Where True Positive Rate is same as *Recall*. 
 And *Flase Positive Rate* are the negative instances that are incorrectly classified as positive.
 *In other words, 1 - True Negative Rate*. Also TNR is called as **Specificity**
+
+## AUC Curve
+It mainly means *Area Under the Curve*. Perfect ROC AUC will have a score of perfect 1 but a random classifier will have ROC AUC equal to 0.5.
+*Instead of using predict use cross_val_predict() and then get FPR, TPR and threshold from roc_curve and then later use the threshold which you like or needed.*
