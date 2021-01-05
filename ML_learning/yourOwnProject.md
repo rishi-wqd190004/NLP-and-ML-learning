@@ -94,3 +94,24 @@ We all know well that group of good people would impact more goodness as compare
 
 ## What is 90% or 95% confidence interval?
 Basically, confidence interval for an unknown parameter is based on sampling the distribution of a corresponding estimator. Other words, it proposes a range of plausible values for an unknown parameter(for example, mean). Majorly it defines values which you are certain of. For more info (https://askinglot.com/what-is-a-90-confidence-interval)
+
+## Normalization and Standardization
+Normalization scales each input variable separately to the range 0-1, which is the range for floating-point values where we have the most precision. Standardization scales each input variable separately by subtracting the mean (called centering) and dividing by the standard deviation to shift the distribution to have a mean of zero and a standard deviation of one.
+The next question is when to use Normalization and Standardization; and in which order?
+To answer: If the distribution of the quantity is normal, then it should be standardized, otherwise the data should be Normalized.
+Another answer: Standardization gives the values in positive and negative, hence better to first standardized and then do Normalization
+Standardization eg: use StandardScaler()
+Normalization eg: use Minmaxscaler()
+(For more see: https://machinelearningmastery.com/standardscaler-and-minmaxscaler-transforms-in-python/)
+
+## Feature selection
+Some methods are:
+    -- Correlation coefficient
+    -- Variance threshold
+    -- Recursive Feature Elimination
+    -- LASSO regularization
+    -- Random Forest Importance
+
+
+## SHAP
+SHAP uses Shapely Values which are how much each features contribution and what is the impact of these features in getting the final result (for example: linear regression). The Shapley value is the average contribution of a feature value to the prediction in different coalitions. The Shapley value is NOT the difference in prediction when we would remove the feature from the mode
