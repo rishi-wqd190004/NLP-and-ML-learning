@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDRegressor, LinearRegression
-from sklearn.preprocessing import PolynomialFeatures
-
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+from sklearn.pipeline import Pipeline
 # random x and y numbers
 x = 2 * np.random.rand(100,1)
 y = 4 + 3 * x + np.random.randn(100,1) #y=4+3x_1+gaussian's noise
@@ -165,4 +165,30 @@ plt.xlabel('$x_1$')
 plt.ylabel("$y$", rotation=0)
 plt.legend(loc="upper left", fontsize=14)
 plt.axis([-3,3,0,10])
+plt.show()
+
+# Polynomial regression with pipeline
+np.random.seed(42)
+m = 100
+x = 6 * np.random.rand(m, 1) - 3
+y = 0.5 * x**2 + x + 2 + np.random.randn(m, 1)
+
+for style, width, degree in (('g-', 1, 300), ('b--', 2, 2), ('r-+', 2, 1)):
+    polybig_features = PolynomialFeatures(degree=degree, include_bias=False)
+    std_scaler = StandardScaler()
+    lin_reg = LinearRegression()
+    polynomial_reg = Pipeline([
+        ('poly_features', polybig_features),
+        ('std_scaler', std_scaler),
+        ("lin_reg", lin_reg),
+    ])
+    polynomial_reg.fit(x, y)
+    y_newbig = polynomial_reg.predict(x_new)
+    plt.plot(x_new, y_newbig, style, label=str(degree), linewidth=width)
+plt.plot(x, y, "b.", linewidth=3)
+plt.legend(loc='upper left')
+plt.xlabel("$x_1$")
+plt.ylabel("$", rotation=0)
+plt.title("high degree polynomial plots")
+plt.axis([-3, 3, 0, 10])
 plt.show()
