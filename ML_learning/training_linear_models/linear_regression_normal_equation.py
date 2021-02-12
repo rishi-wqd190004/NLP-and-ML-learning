@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.linear_model import SGDRegressor
+from sklearn.linear_model import SGDRegressor, LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
 
 # random x and y numbers
 x = 2 * np.random.rand(100,1)
@@ -42,7 +43,6 @@ for iternation in range(n_iterations):
 print('value at GD steps \n', theta)
 #plotting 
 theta_path_bgd = []
-
 def plot_gradient_descent(theta, eta, theta_path=None):
     m = len(x_b)
     plt.plot(x, y, "b.")
@@ -68,6 +68,8 @@ plt.subplot(133); plot_gradient_descent(theta, eta=0.5)
 plt.show()
 
 ## applying SGD
+theta_path_sgd = []
+m = len(x_b)
 n_epochs = 50
 t0, t1 = 5, 50 # learning schedule parameters
 def learning_schedule(t):
@@ -77,14 +79,90 @@ theta = np.random.randn(2,1)
 
 for epoch in range(n_epochs):
     for i in range(m):
+        if epoch == 0 and i<20:
+            y_pred = x_new_b.dot(theta)
+            style = "b-" if i > 0 else "r--"
+            plt.plot(x_new, y_pred, style)
         random_index = np.random.randint(m)
         xi = x_b[random_index:random_index+1]
         yi = y[random_index:random_index+1]
         gradients = 2 * xi.T.dot(xi.dot(theta) - yi)
         eta = learning_schedule(epoch * m + i)
         theta = theta - eta * gradients
+        theta_path_sgd.append(theta)
 print('SGD for 50 iterations: ', theta)
 
 sgd_reg = SGDRegressor(max_iter=1000, tol=1e-3, penalty=None, eta0=0.1) #eta0 is initial lr; tol is for early stopping
 sgd_reg.fit(x, y.ravel())
 print('SGD intercept: {} \n SGD coef: {}'.format(sgd_reg.intercept_, sgd_reg.coef_))
+
+## applying Mini-batch GD
+theta_path_mgd = []
+n_iterations = 50
+minibatch_size = 20
+np.random.seed(42)
+theta = np.random.randn(2,1)
+t0, t1 = 200, 1000
+## using previous set learning_schedule
+t = 0
+for epoch in range(n_iterations):
+    shuffled_indices = np.random.permutation(m)
+    x_b_shuffled = x_b[shuffled_indices]
+    y_shuffled = y[shuffled_indices]
+    for i in range(0, m, minibatch_size):
+        t += 1
+        xi = x_b_shuffled[i:i+minibatch_size]
+        yi = y_shuffled[i:i+minibatch_size]
+        gradients = 2/minibatch_size * xi.T.dot(xi.dot(theta) - yi)
+        eta = learning_schedule(t)
+        theta = theta - eta * gradients
+        theta_path_mgd.append(theta)
+print('Mini-batch GD theta value : \n', theta)
+
+# changing to an array
+theta_path_bgd = np.array(theta_path_bgd)
+theta_path_sgd = np.array(theta_path_sgd)
+theta_path_mgd = np.array(theta_path_mgd)
+
+# plotting
+plt.figure(figsize=(16,8))
+plt.plot(theta_path_sgd[:, 0], theta_path_sgd[:, 1], "r-s", linewidth=1, label="Stochastic")
+plt.plot(theta_path_mgd[:, 0], theta_path_mgd[:, 1], "g-+", linewidth=2, label="Mini-batch")
+plt.plot(theta_path_bgd[:, 0], theta_path_bgd[:, 1], "b-o", linewidth=3, label="Batch")
+plt.legend(loc="upper left", fontsize=16)
+plt.xlabel(r"$\theta_0$", fontsize=20)
+plt.ylabel(r"$\theta_1$   ", fontsize=20, rotation=0)
+plt.axis([2.5, 4.5, 2.3, 3.9])
+plt.show()
+
+## Polynomial Regression
+np.random.seed(42)
+m = 100
+x = 6 * np.random.randn(m, 1)
+y = 0.5 * x**2 + x + 2 + np.random.randn(m, 1)
+plt.figure(figsize=(16, 8))
+plt.plot(x, y, "b.")
+plt.title("Polynomial Regression")
+plt.xlabel('$x_1$')
+plt.ylabel('$y$', rotation=0)
+plt.axis([-3, 3, 0, 10])
+plt.show()
+# using sklearn package
+poly_features = PolynomialFeatures(degree=2, include_bias=False)
+x_poly = poly_features.fit_transform(x)
+print(x[0])
+lin_reg = LinearRegression()
+lin_reg.fit(x_poly, y)
+print('linear regression intercepts and coeff: \n', lin_reg.intercept_, lin_reg.coef_)
+x_new = np.linspace(-3,3,100).reshape(100,1)
+x_new_poly = poly_features.transform(x_new)
+y_new = lin_reg.predict(x_new_poly)
+plt.figure(figsize=(16,8))
+plt.plot(x,y,'b.')
+plt.plot(x_new, y_new, "r-", linewidth=2, label="Predictions")
+plt.title("Prediction on Polynomial")
+plt.xlabel('$x_1$')
+plt.ylabel("$y$", rotation=0)
+plt.legend(loc="upper left", fontsize=14)
+plt.axis([-3,3,0,10])
+plt.show()
