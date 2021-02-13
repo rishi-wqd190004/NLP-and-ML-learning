@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 from sklearn.linear_model import SGDRegressor, LinearRegression
 from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from sklearn.pipeline import Pipeline
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
+
 # random x and y numbers
 x = 2 * np.random.rand(100,1)
 y = 4 + 3 * x + np.random.randn(100,1) #y=4+3x_1+gaussian's noise
@@ -167,7 +170,7 @@ plt.legend(loc="upper left", fontsize=14)
 plt.axis([-3,3,0,10])
 plt.show()
 
-# Polynomial regression with pipeline
+# Polynomial regression with pipeline for 300 degree polynomial
 np.random.seed(42)
 m = 100
 x = 6 * np.random.rand(m, 1) - 3
@@ -191,4 +194,34 @@ plt.xlabel("$x_1$")
 plt.ylabel("$", rotation=0)
 plt.title("high degree polynomial plots")
 plt.axis([-3, 3, 0, 10])
+plt.show()
+
+## Learning curves --> solving the problem of underfitting and overfitting
+def plot_learning_curve(model, x, y):
+    x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.2, random_state=10)
+    train_errors, val_errors = [], []
+    for m in range(1, len(x_train)):
+        model.fit(x_train[:m], y_train[:m])
+        y_train_pred = model.predict(x_train[:m])
+        y_val_pred = model.predict(x_val)
+        train_errors.append(mean_squared_error(y_train[:m], y_train_pred))
+        val_errors.append(mean_squared_error(y_val, y_val_pred))
+    plt.plot(np.sqrt(train_errors), "r-+", label="train")
+    plt.plot(np.sqrt(val_errors), "b-", label="val")
+    plt.legend(loc="upper right")
+    plt.xlabel("Training set size")
+    plt.ylabel("RMSE")
+
+lin_reg = LinearRegression()
+plot_learning_curve(lin_reg, x, y)
+plt.axis([0, 80, 0, 3])
+plt.show()
+
+# 10th degree polynomial model on the same data
+polynomial_reg_10 = Pipeline([
+    ("poly_features", PolynomialFeatures(degree=10, include_bias=False)),
+    ("lin_reg", LinearRegression()),
+])
+plot_learning_curve(polynomial_reg_10, x, y)
+plt.axis([0, 80, 0, 3])
 plt.show()
