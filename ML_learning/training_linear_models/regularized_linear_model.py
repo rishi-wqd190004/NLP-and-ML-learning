@@ -1,5 +1,5 @@
 import numpy as np
-from sklearn.linear_model import Ridge, SGDRegressor, Lasso
+from sklearn.linear_model import Ridge, SGDRegressor, Lasso, ElasticNet
 
 ## Ridge regression
 ### by closed-form solution
@@ -24,3 +24,8 @@ print('Ridge by Gradient decent for 1.5: \n', sgd_reg.predict([[1.5]]))
 lasso_reg = Lasso(alpha=0.1)
 lasso_reg.fit(x, y)
 print("Lasso regression predict for 1.5: \n", lasso_reg.predict([[1.5]]))
+
+## Elastic Net
+elastic_net = ElasticNet(alpha=0.1, l1_ratio=0.5, random_state=42)
+elastic_net.fit(x, y)
+print("Elastic Net predict for 1.5: \n", elastic_net.predict([[1.5]]))
